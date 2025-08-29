@@ -16,6 +16,7 @@ int main() {
     InitWindow(800, 450, "CS Ergh");
     InitAudioDevice();
     SetTargetFPS(60);
+    SetExitKey(KEY_NULL);
 
     std::vector<std::unique_ptr<Screen>> screenStack;
     screenStack.push_back(std::make_unique<Menu>());

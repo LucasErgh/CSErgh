@@ -31,7 +31,7 @@ void Game::render() {
     Handles events in the main menu
 */
 ScreenCommand Game::update(){
-    if (IsKeyPressed(KEY_Q)){
+    if (IsKeyPressed(KEY_ESCAPE)){
         EnableCursor();
         return ScreenCommand::AddPauseMenu;
     }
