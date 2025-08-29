@@ -2,40 +2,47 @@
     main.cpp
 */
 
+#include "game.hpp"
+#include "screen.hpp"
 #include "menu.hpp"
 #include "raylib.h"
 #include "raymath.h"
-
-enum WindowState{
-    MainMenu
-};
+#include <vector>
+#include <memory>
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 450, "Bob's Mansion");
+    InitWindow(800, 450, "CS Ergh");
     InitAudioDevice();
-    DisableCursor();
     SetTargetFPS(60);
 
-    Camera camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 0.5f, 5.0f };
-    camera.target = (Vector3){ 3.0f, 1.0f, 3.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    std::vector<std::unique_ptr<Screen>> screenStack;
+    screenStack.push_back(std::make_unique<Menu>());
 
-    WindowState state = WindowState::MainMenu;
+
 
     while(!WindowShouldClose()){
-        switch (state)
+        ScreenCommand cmd = screenStack.back()->update();
+        switch (cmd)
         {
-        case WindowState::MainMenu:
-            Menu::DrawMenu();
+        case ScreenCommand::RemoveScreen:
+            screenStack.pop_back();
+            screenStack.back()->onTop();
             break;
-
+        case ScreenCommand::AddOptions:
+            break;
+        case ScreenCommand::AddMenu:
+            break;
+        case ScreenCommand::AddGame:
+            screenStack.push_back(std::make_unique<Game>());
+            screenStack.back()->onTop();
+            break;
+        case ScreenCommand::None:
+            break;
         default:
             break;
         }
+        screenStack.back()->render();
     }
 
     CloseWindow();
