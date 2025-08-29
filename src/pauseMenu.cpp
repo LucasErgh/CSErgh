@@ -6,8 +6,8 @@
 #include "raylib.h"
 
 pauseMenu::pauseMenu() {
-    ui.addButton(0, 0.5f, 0.3f, 0.35f, 0.2f, "Resume");
-    ui.addButton(1, 0.5f, 0.6f, 0.35f, 0.2f, "Main Menu");
+    ui.addButton(1, 0.5f, 0.3f, 0.35f, 0.2f, "Resume");
+    ui.addButton(2, 0.5f, 0.6f, 0.35f, 0.2f, "Main Menu");
 }
 
 /*
@@ -62,7 +62,12 @@ ScreenCommand pauseMenu::update(){
     }
 
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        Vector2 mousePos = GetMousePosition();
+        int buttonPresed = ui.checkMouseCollision();
+        if (buttonPresed == 1)
+            return ScreenCommand::RemoveScreen;
+        if (buttonPresed == 2){
+            TraceLog(1, "aL:SDK");
+        }
     }
     return ScreenCommand::None;
 }

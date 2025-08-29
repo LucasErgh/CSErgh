@@ -33,6 +33,19 @@ void UIManager::draw(){
     }
 }
 
+int UIManager::checkMouseCollision() {
+    Vector2 mouse = GetMousePosition();
+    int width = GetScreenWidth();
+    int height = GetScreenHeight();
+    for (auto& cur : buttons) {
+        if (CheckCollisionPointRec(mouse, {cur.xPosPercent * width - cur.widthPercent*width/2, cur.yPosPercent * height - cur.heightPercent*height/2, cur.widthPercent*width, cur.heightPercent*height})){
+            return cur.id;
+        }
+    }
+
+    return 0;
+}
+
 int UIManager::determineFontSize(Button button){
 
 }
