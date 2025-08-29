@@ -3,6 +3,7 @@
 */
 
 #include "game.hpp"
+#include "titleScreen.hpp"
 #include "pauseMenu.hpp"
 #include "screen.hpp"
 #include "menu.hpp"
@@ -19,7 +20,7 @@ int main() {
     SetExitKey(KEY_NULL);
 
     std::vector<std::unique_ptr<Screen>> screenStack;
-    screenStack.push_back(std::make_unique<Menu>());
+    screenStack.push_back(std::make_unique<TitleScreen>());
 
     bool exitLoop = false;
 
@@ -33,17 +34,23 @@ int main() {
             screenStack.pop_back();
             screenStack.back()->onTop();
             break;
+
         case ScreenCommand::AddOptions:
             break;
+
         case ScreenCommand::AddMenu:
+            screenStack.push_back(std::make_unique<Menu>());
             break;
+
         case ScreenCommand::AddPauseMenu:
             screenStack.push_back(std::make_unique<pauseMenu>());
             break;
+
         case ScreenCommand::AddGame:
             screenStack.push_back(std::make_unique<Game>());
             screenStack.back()->onTop();
             break;
+
         case ScreenCommand::ExitProgram:
             exitLoop = true;
         case ScreenCommand::None:
