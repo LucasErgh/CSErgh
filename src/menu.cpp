@@ -6,11 +6,9 @@
 #include "raylib.h"
 
 Menu::Menu() {
-    float widthCenter = GetScreenWidth()/2.0f;
-    titlePos = { widthCenter, GetScreenHeight()/2.0f };
-
-    Vector2 textSize = MeasureTextEx(GetFontDefault(), "Start\0", fontSize, fontSize/10);
-    startBox = {widthCenter - textSize.x/2 - padding/2, GetScreenHeight()*0.6f - textSize.y/2 - padding/2, textSize.x + padding, textSize.y + padding};
+    ui.addText(3, 0.5f, 0.1f, 0.4f, 0.2f, "CS Ergh");
+    ui.addButton(1, 0.5f, 0.4f, 0.4f, 0.2f, "Start");
+    ui.addButton(2, 0.5f, 0.7f, 0.4f, 0.2f, "Exit");
 }
 
 /*
@@ -23,32 +21,10 @@ void Menu::onTop(){
     Draw the main menu
 */
 void Menu::render(){
-    const char* title = "CS Ergh\0";
-    const int titleFont = 50;
-    Vector2 titlePosition = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
-
-    const char* startButtonText = "Start\0";
-
-    int padding = 50;
-
+    ui.draw();
     BeginDrawing();
         ClearBackground(RAYWHITE);
-
-        Vector2 textSize = MeasureTextEx(GetFontDefault(), title, titleFont, titleFont/10);
-        DrawText(title, (GetScreenWidth()/2.0f - textSize.x / 2.0f), (GetScreenHeight()/3.0f - textSize.y / 2.0f), titleFont, GRAY);
-
-        textSize = MeasureTextEx(GetFontDefault(), startButtonText, titleFont, titleFont/10);
-        DrawRectangle(
-            GetScreenWidth()/2.0f - textSize.x/2 - padding/2,
-            GetScreenHeight()*0.6f - textSize.y/2 - padding/2,
-            textSize.x + padding,
-            textSize.y + padding,
-            LIGHTGRAY
-        );
-
-        DrawText(startButtonText, (GetScreenWidth()/2.0f - textSize.x / 2.0f), (GetScreenHeight()*0.6f - textSize.y / 2.0f), titleFont, GRAY);
-
-        DrawCircle(GetScreenWidth()/2, GetScreenHeight()/2, 5, RED);
+        ui.draw();
     EndDrawing();
 }
 
@@ -58,9 +34,13 @@ ScreenCommand Menu::update(){
     }
 
     if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        Vector2 mousePos = GetMousePosition();
-        if (CheckCollisionPointRec(mousePos, startBox))
+        int box = ui.checkMouseCollision();
+        if (box == 1){
             return ScreenCommand::AddGame;
+        } else if (box == 2){
+            return ScreenCommand::ExitProgram;
+        }
+
     }
     return ScreenCommand::None;
 }

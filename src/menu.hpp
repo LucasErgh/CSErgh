@@ -6,6 +6,7 @@
 #define MENU_HPP
 
 #include "screen.hpp"
+#include "UIManager.hpp"
 #include "raylib.h"
 
 class Menu : public Screen {
@@ -31,6 +32,7 @@ public:
     ScreenCommand update() override;
 
 private:
+    UIManager ui;
     Vector2 titlePos;
     Rectangle startBox;
     Rectangle exitBox;

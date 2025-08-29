@@ -7,10 +7,12 @@
 
 enum ScreenCommand{
     RemoveScreen,
+    RemoveScreenTwice,
     AddOptions,
     AddMenu,
     AddGame,
     AddPauseMenu,
+    ExitProgram,
     None
 };
 
