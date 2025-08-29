@@ -10,6 +10,7 @@ enum ScreenCommand{
     AddOptions,
     AddMenu,
     AddGame,
+    AddPauseMenu,
     None
 };
 

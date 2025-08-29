@@ -3,6 +3,7 @@
 */
 
 #include "game.hpp"
+#include "pauseMenu.hpp"
 #include "screen.hpp"
 #include "menu.hpp"
 #include "raylib.h"
@@ -32,6 +33,9 @@ int main() {
         case ScreenCommand::AddOptions:
             break;
         case ScreenCommand::AddMenu:
+            break;
+        case ScreenCommand::AddPauseMenu:
+            screenStack.push_back(std::make_unique<pauseMenu>());
             break;
         case ScreenCommand::AddGame:
             screenStack.push_back(std::make_unique<Game>());
