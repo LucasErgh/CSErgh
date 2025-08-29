@@ -29,7 +29,17 @@ void UIManager::draw(){
         r.y = cur.yPosPercent * height - r.height/2;
 
         DrawRectangleRec(r, cur.backgroundColor);
-        DrawText(cur.text.c_str(), r.x + r.width/2 - MeasureText(cur.text.c_str(), fontSize)/2, r.y + r.height*0.45, fontSize, WHITE);
+        DrawText(cur.text.c_str(), r.x + r.width/2 - MeasureText(cur.text.c_str(), fontSize)/2, r.y + r.height*0.45, fontSize, cur.textColor);
+    }
+
+    for(auto& cur : texts) {
+        Rectangle r;
+        r.width = cur.widthPercent * width;
+        r.height = cur.heightPercent * height;
+        r.x = cur.xPercent * width - r.width/2;
+        r.y = cur.yPercent * height - r.height/2;
+
+        DrawText(cur.text.c_str(), r.x + r.width/2 - MeasureText(cur.text.c_str(), fontSize)/2, r.y + r.height*0.45, fontSize, cur.textColor);
     }
 }
 

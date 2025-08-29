@@ -15,8 +15,8 @@ private:
         int id;
         float xPercent, yPercent;
         float widthPercent, heightPercent;
-        const std::string& text; 
-        Color textColor = BLACK;
+        std::string text; 
+        Color textColor;
     };
 
     struct Button{

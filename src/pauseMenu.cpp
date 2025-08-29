@@ -7,7 +7,8 @@
 
 pauseMenu::pauseMenu() {
     ui.addButton(1, 0.5f, 0.3f, 0.35f, 0.2f, "Resume");
-    ui.addButton(2, 0.5f, 0.6f, 0.35f, 0.2f, "Main Menu");
+    ui.addButton(2, 0.5f, 0.6f, 0.35f, 0.2f, "Quit Game");
+    ui.addText(3, 0.5f, 0.1f, 0.3f, 0.2f, "Game Paused");
 }
 
 /*
@@ -66,7 +67,7 @@ ScreenCommand pauseMenu::update(){
         if (buttonPresed == 1)
             return ScreenCommand::RemoveScreen;
         if (buttonPresed == 2){
-            TraceLog(1, "aL:SDK");
+            WindowShouldClose();
         }
     }
     return ScreenCommand::None;
