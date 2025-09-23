@@ -23,7 +23,7 @@ void Game::render() {
         ClearBackground(BLACK);
         BeginMode3D(camera);
             DrawGrid(20, 1.0f);
-            DrawSphere({ 0, 0, 0 }, 3, RED);
+            DrawSphere(testSpherePos, testSphereRadius, testSphereColor);
 
         EndMode3D();
 
@@ -41,6 +41,7 @@ ScreenCommand Game::update(){
     } if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         PlaySound(AssetManager::getInstance()->GetSound("Pew1"));
     }
+    checkCollision();
     return ScreenCommand::None;
 }
 
@@ -59,4 +60,23 @@ void Game::renderHUD(){
         0.5f,
         WHITE
     );
+
+    if (hit == true){
+        DrawText("HIT", 20, 20, 40, GREEN);
+    }
+
+    DrawCircle(GetScreenWidth()/2, GetScreenHeight()/2, 5, WHITE);
+}
+
+void Game::checkCollision() {
+    auto ray = GetScreenToWorldRay({GetScreenWidth()/2, GetScreenHeight()/2}, camera);
+
+    RayCollision collision = { 0 };
+    const char *hitObjectName = "None";
+    collision.hit = false;
+    Color cursorColor = WHITE;
+
+    collision = GetRayCollisionSphere(ray, testSpherePos, testSphereRadius);
+    if (collision.hit) hit = true;
+    else hit = false;
 }

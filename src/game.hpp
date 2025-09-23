@@ -35,7 +35,14 @@ public:
 private:
     Camera camera = { 0 };
 
+    Vector3 testSpherePos = {0, 0, 0};
+    float testSphereRadius = 3.0f;
+    Color testSphereColor = RED;
+
     void renderHUD();
+
+    void checkCollision();
+    bool hit = false;
 };
 
 #endif
