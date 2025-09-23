@@ -24,6 +24,6 @@ add_custom_target(run
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-target_sources(${PROJECT_NAME} PUBLIC "./src/menu.cpp" "./src/game.cpp" "./src/pauseMenu.cpp" "./src/UIManager.cpp" "./src/titleScreen.cpp")
+target_sources(${PROJECT_NAME} PUBLIC "./Menus/menu.cpp" "./src/game.cpp" "./Menus/pauseMenu.cpp" "./Menus/UIManager.cpp" "./Menus/titleScreen.cpp")
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib)
-target_include_directories(${PROJECT_NAME} PUBLIC "./src")
+target_include_directories(${PROJECT_NAME} PUBLIC "./src" "./Menus")
