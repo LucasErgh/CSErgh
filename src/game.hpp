@@ -34,6 +34,8 @@ public:
 
 private:
     Camera camera = { 0 };
+
+    void renderHUD();
 };
 
 #endif

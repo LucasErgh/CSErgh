@@ -14,7 +14,7 @@
 
 int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 450, "CS Ergh");
+    InitWindow(1600, 900, "CS Ergh");
     InitAudioDevice();
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);

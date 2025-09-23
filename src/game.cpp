@@ -3,6 +3,7 @@
 */
 
 #include "game.hpp"
+#include "assetManager.hpp"
 #include "raylib.h"
 
 Game::Game(){
@@ -23,7 +24,10 @@ void Game::render() {
         BeginMode3D(camera);
             DrawGrid(20, 1.0f);
             DrawSphere({ 0, 0, 0 }, 3, RED);
+
         EndMode3D();
+
+        renderHUD();
     EndDrawing();
 }
 
@@ -34,6 +38,8 @@ ScreenCommand Game::update(){
     if (IsKeyPressed(KEY_ESCAPE)){
         EnableCursor();
         return ScreenCommand::AddPauseMenu;
+    } if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+        PlaySound(AssetManager::getInstance()->GetSound("Pew1"));
     }
     return ScreenCommand::None;
 }
@@ -43,4 +49,14 @@ ScreenCommand Game::update(){
 */
 void Game::onTop(){
     DisableCursor();
+}
+
+void Game::renderHUD(){
+    DrawTextureEx(
+        AssetManager::getInstance()->GetTexture("Gun"),
+        { 800, 450 },
+        0.0f,
+        0.5f,
+        WHITE
+    );
 }
