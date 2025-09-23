@@ -16,8 +16,10 @@ public:
 
     ~AssetManager();
 
+    Model& GetModel(const std::string& name);
     Texture2D& GetTexture(const std::string& name);
     Sound& GetSound(const std::string& name);
+    Color* GetImageColors(const std::string& name);
 private:
     AssetManager();
 
@@ -26,8 +28,10 @@ private:
 
     static AssetManager* instance;
 
+    std::unordered_map<std::string, Model> models;
     std::unordered_map<std::string, Texture2D> textures;
     std::unordered_map<std::string, Sound> sounds;
+    std::unordered_map<std::string, Color*> imageColors;
 };
 
 #endif

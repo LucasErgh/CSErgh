@@ -35,6 +35,8 @@ public:
 private:
     Camera camera = { 0 };
 
+    Vector3 mapPosition = {0, 0, 0};
+
     Vector3 testSpherePos = {0, 0, 0};
     float testSphereRadius = 3.0f;
     Color testSphereColor = RED;
@@ -43,6 +45,9 @@ private:
 
     void checkCollision();
     bool hit = false;
+
+    void drawHitBoxAroundCamera();
+    void checkCubicMapCollision();
 };
 
 #endif

@@ -5,9 +5,10 @@
 #include "game.hpp"
 #include "assetManager.hpp"
 #include "raylib.h"
+#include "raymath.h"
 
 Game::Game(){
-    camera.position = (Vector3){ 5.0f, 1.0f, 5.0f };
+    camera.position = (Vector3){ 5.0f, 0.5f, 5.0f };
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
@@ -18,12 +19,14 @@ Game::Game(){
     Renders screen
 */
 void Game::render() {
-    UpdateCamera(&camera, CAMERA_FIRST_PERSON);
     BeginDrawing();
         ClearBackground(BLACK);
         BeginMode3D(camera);
             DrawGrid(20, 1.0f);
             DrawSphere(testSpherePos, testSphereRadius, testSphereColor);
+
+            DrawModel(AssetManager::getInstance()->GetModel("MapModel"), mapPosition, 1.0f, WHITE);
+            drawHitBoxAroundCamera();
 
         EndMode3D();
 
@@ -35,6 +38,8 @@ void Game::render() {
     Handles events in the main menu
 */
 ScreenCommand Game::update(){
+    checkCubicMapCollision();
+
     if (IsKeyPressed(KEY_ESCAPE)){
         EnableCursor();
         return ScreenCommand::AddPauseMenu;
@@ -53,18 +58,33 @@ void Game::onTop(){
 }
 
 void Game::renderHUD(){
-    DrawTextureEx(
-        AssetManager::getInstance()->GetTexture("Gun"),
-        { 800, 450 },
-        0.0f,
-        0.5f,
-        WHITE
-    );
+    // Draw MiniMap
+    int playerCellX = (int)(camera.position.x + 0.5f);
+    int playerCellY = (int)(camera.position.z + 0.5f);
+    Texture2D& cubicmap = AssetManager::getInstance()->GetTexture("CubicMapTexture");
 
+    DrawTextureEx(cubicmap, (Vector2){ GetScreenWidth() - cubicmap.width*4.0f - 20, 20.0f }, 0.0f, 4.0f, WHITE);
+    DrawRectangleLines(GetScreenWidth() - cubicmap.width*4 - 20, 20, cubicmap.width*4, cubicmap.height*4, GREEN);
+    DrawRectangle(GetScreenWidth() - cubicmap.width*4 - 20 + playerCellX*4, 20 + playerCellY*4, 4, 4, RED);
+
+    // Draw Gun
+    int screenWidth  = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+    float scale = 1.0f;
+    Texture2D& texture = AssetManager::getInstance()->GetTexture("Gun");
+
+    Vector2 position = {
+        (screenWidth * 2.0f / 3.0f) - (texture.width * scale / 2.0f),
+        screenHeight - (texture.height * scale)
+    };
+    DrawTextureEx(texture, position, 0.0f, scale, WHITE);
+
+    // Draw Hit text
     if (hit == true){
         DrawText("HIT", 20, 20, 40, GREEN);
     }
 
+    // Draw Crosshair
     DrawCircle(GetScreenWidth()/2, GetScreenHeight()/2, 5, WHITE);
 }
 
@@ -77,6 +97,50 @@ void Game::checkCollision() {
     Color cursorColor = WHITE;
 
     collision = GetRayCollisionSphere(ray, testSpherePos, testSphereRadius);
-    if (collision.hit) hit = true;
+    if (collision.hit && collision.distance > 0) hit = true;
     else hit = false;
+}
+
+void Game::drawHitBoxAroundCamera(){
+    const Vector3 hitboxDimentions = {0.5f, 0.7f, 0.5f};
+    const Vector3 hitboxCenter = Vector3Subtract(camera.position, {0, 0.1f, 0});
+
+    DrawCubeWiresV(hitboxCenter, hitboxDimentions, MAROON);
+}
+
+void Game::checkCubicMapCollision() {
+        Vector3 oldCamPos = camera.position;
+        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+
+        Vector2 playerPos = { camera.position.x, camera.position.z };
+        float playerRadius = 0.1f;  // Collision radius (player is modelled as a cilinder for collision)
+
+        int playerCellX = (int)(playerPos.x - mapPosition.x + 0.5f);
+        int playerCellY = (int)(playerPos.y - mapPosition.z + 0.5f);
+
+        Texture2D& cubicmap = AssetManager::getInstance()->GetTexture("CubicMapTexture");
+        Color* mapPixels = AssetManager::getInstance()->GetImageColors("MapPixels");
+
+        // Out-of-limits security check
+        if (playerCellX < 0) playerCellX = 0;
+        else if (playerCellX >= cubicmap.width) playerCellX = cubicmap.width - 1;
+
+        if (playerCellY < 0) playerCellY = 0;
+        else if (playerCellY >= cubicmap.height) playerCellY = cubicmap.height - 1;
+
+        // Check map collisions using image data and player position
+        // TODO: Improvement: Just check player surrounding cells for collision
+        for (int y = 0; y < cubicmap.height; y++)
+        {
+            for (int x = 0; x < cubicmap.width; x++)
+            {
+                if ((mapPixels[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
+                    (CheckCollisionCircleRec(playerPos, playerRadius,
+                    (Rectangle){ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
+                {
+                    // Collision detected, reset camera position
+                    camera.position = oldCamPos;
+                }
+            }
+        }
 }
