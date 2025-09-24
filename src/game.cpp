@@ -54,9 +54,12 @@ ScreenCommand Game::update(){
     if (IsKeyPressed(KEY_ESCAPE)){
         EnableCursor();
         return ScreenCommand::AddPauseMenu;
-    } if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    }
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         handleLeftClick();
     }
+
     return ScreenCommand::None;
 }
 
