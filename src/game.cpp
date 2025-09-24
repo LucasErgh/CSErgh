@@ -69,6 +69,7 @@ void Game::handleLeftClick(){
     auto hitEnemy = std::find_if(enemies.begin(), enemies.end(), [&enemyID](const Enemy& e) { return e.id == enemyID; });
 
     if (hitEnemy != enemies.end()) {
+        PlaySound(AssetManager::getInstance()->GetSound("Hit"));
         hitEnemy->health -= 20;
         if (hitEnemy->health <= 0) {
             enemies.erase(hitEnemy);

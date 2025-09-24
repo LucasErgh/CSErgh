@@ -30,6 +30,8 @@ AssetManager::AssetManager() {
 
     imageColors["MapPixels"] = LoadImageColors(imMap);
     UnloadImage(imMap);
+
+    sounds["Hit"] = LoadSound("../assets/hit.wav");
 }
 
 AssetManager::~AssetManager() {
