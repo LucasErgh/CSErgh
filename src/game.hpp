@@ -49,7 +49,7 @@ private:
 
     void renderHUD();
 
-    void checkCollision();
+    void getEnemyRayCollisions();
     bool hit = false;
 
     void drawHitBoxAroundCamera();

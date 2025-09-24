@@ -57,7 +57,7 @@ ScreenCommand Game::update(){
     } if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
         PlaySound(AssetManager::getInstance()->GetSound("Pew1"));
     }
-    checkCollision();
+    getEnemyRayCollisions();
     return ScreenCommand::None;
 }
 
@@ -99,7 +99,7 @@ void Game::renderHUD(){
     DrawCircle(GetScreenWidth()/2, GetScreenHeight()/2, 5, WHITE);
 }
 
-void Game::checkCollision() {
+void Game::getEnemyRayCollisions() {
     auto ray = GetScreenToWorldRay({GetScreenWidth()/2, GetScreenHeight()/2}, camera);
 
     RayCollision collision = { 0 };
@@ -107,12 +107,22 @@ void Game::checkCollision() {
     collision.hit = false;
     Color cursorColor = WHITE;
 
-    RayCollision curCollision;
+    RayCollision mapCollision = { 0 };
+    Model& map = AssetManager::getInstance()->GetModel("MapModel");
+    for (int i = 0; i < map.meshCount; ++i) {
+        mapCollision = GetRayCollisionMesh(ray, map.meshes[i], map.transform);
+        if (mapCollision.hit && mapCollision.distance > 0) {
+            collision = mapCollision;
+        }
+    }
 
+    RayCollision curCollision = { 0 };
+    hit = false;
     for (auto& enemy : enemies) {
-        collision = GetRayCollisionSphere(ray, testSpherePos, testSphereRadius);
-        if (collision.hit && collision.distance > 0) hit = true;
-        else hit = false;
+        curCollision = GetRayCollisionSphere(ray, enemy.position, enemy.size);
+        if (curCollision.hit && curCollision.distance > 0 && (collision.hit == true && curCollision.distance < collision.distance)) {
+            hit = true;
+        }
     }
     
 }
