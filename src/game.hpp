@@ -49,11 +49,12 @@ private:
 
     void renderHUD();
 
-    void getEnemyRayCollisions();
-    bool hit = false;
+    bool getEnemyRayCollisions(int& enemyID);
 
     void drawHitBoxAroundCamera();
     void checkCubicMapCollision();
+
+    void handleLeftClick();
 
     void spawnEnemy();
 };

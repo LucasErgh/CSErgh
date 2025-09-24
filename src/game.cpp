@@ -7,6 +7,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <random>
+#include <algorithm>
 
 Game::Game(){
     camera.position = (Vector3){ 5.0f, 0.5f, 5.0f };
@@ -55,10 +56,24 @@ ScreenCommand Game::update(){
         EnableCursor();
         return ScreenCommand::AddPauseMenu;
     } if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-        PlaySound(AssetManager::getInstance()->GetSound("Pew1"));
+        handleLeftClick();
     }
-    getEnemyRayCollisions();
     return ScreenCommand::None;
+}
+
+void Game::handleLeftClick(){
+    PlaySound(AssetManager::getInstance()->GetSound("Pew1"));
+
+    int enemyID;
+    bool hit = getEnemyRayCollisions(enemyID);
+    auto hitEnemy = std::find_if(enemies.begin(), enemies.end(), [&enemyID](const Enemy& e) { return e.id == enemyID; });
+
+    if (hitEnemy != enemies.end()) {
+        hitEnemy->health -= 10;
+        if (hitEnemy->health <= 0) {
+            enemies.erase(hitEnemy);
+        }
+    }
 }
 
 /*
@@ -90,16 +105,11 @@ void Game::renderHUD(){
     };
     DrawTextureEx(texture, position, 0.0f, scale, WHITE);
 
-    // Draw Hit text
-    if (hit == true){
-        DrawText("HIT", 20, 20, 40, GREEN);
-    }
-
     // Draw Crosshair
     DrawCircle(GetScreenWidth()/2, GetScreenHeight()/2, 5, WHITE);
 }
 
-void Game::getEnemyRayCollisions() {
+bool Game::getEnemyRayCollisions(int& enemyID) {
     auto ray = GetScreenToWorldRay({GetScreenWidth()/2, GetScreenHeight()/2}, camera);
 
     RayCollision collision = { 0 };
@@ -117,14 +127,15 @@ void Game::getEnemyRayCollisions() {
     }
 
     RayCollision curCollision = { 0 };
-    hit = false;
+    bool hit = false;
     for (auto& enemy : enemies) {
         curCollision = GetRayCollisionSphere(ray, enemy.position, enemy.size);
         if (curCollision.hit && curCollision.distance > 0 && (collision.hit == true && curCollision.distance < collision.distance)) {
-            hit = true;
+            enemyID = enemy.id;
         }
     }
-    
+
+    return hit;
 }
 
 void Game::drawHitBoxAroundCamera(){
@@ -173,16 +184,19 @@ void Game::checkCubicMapCollision() {
 
 void Game::spawnEnemy() {
     Texture2D& cubicmap = AssetManager::getInstance()->GetTexture("CubicMapTexture");
-    Color* mapPixels = AssetManager::getInstance()->GetImageColors("MapPixels");   
+    Color* mapPixels = AssetManager::getInstance()->GetImageColors("MapPixels");
+
+    static int nextEntityID = 0;
 
     while (true) {
         int xPos = std::rand() % cubicmap.width;
         int zPos = std::rand() % cubicmap.height;
 
         if (mapPixels[zPos*cubicmap.width + xPos].r != 255) {
-            Enemy badGuy;
-            badGuy.position = {(float)xPos, 0.5f, (float)zPos};
-            enemies.push_back(badGuy);
+            Enemy enemy;
+            enemy.id = nextEntityID++;
+            enemy.position = {(float)xPos, 0.5f, (float)zPos};
+            enemies.push_back(enemy);
             return;
         }
     }
