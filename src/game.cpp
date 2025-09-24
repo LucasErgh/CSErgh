@@ -45,8 +45,7 @@ void Game::render() {
     Handles events in the main menu
 */
 ScreenCommand Game::update(){
-    UpdateCamera(&camera, CAMERA_FIRST_PERSON);
-    //checkCubicMapCollision();
+    checkCubicMapCollision();
 
     while (enemies.size() <= 5) {
         spawnEnemy();
