@@ -3,6 +3,7 @@
 */
 
 #include "assetManager.hpp"
+#include <cstring>
 
 AssetManager* AssetManager::instance = nullptr;
 
@@ -14,24 +15,24 @@ AssetManager* AssetManager::getInstance() {
 }
 
 AssetManager::AssetManager() {
-    sounds["Pew1"] = LoadSound("../assets/Pew1.wav");
+    sounds["Pew1"] = LoadSound(strcat(ASSETS_DIR, "/Pew1.wav\0"));
 
-    Image GunImage = LoadImage("../assets/Gun.png");
+    Image GunImage = LoadImage(strcat(ASSETS_DIR, "/Gun.png\0"));
     textures["Gun"] = LoadTextureFromImage(GunImage);
     UnloadImage(GunImage);
 
-    Image imMap = LoadImage("../assets/cubicmap.png");
+    Image imMap = LoadImage(strcat(ASSETS_DIR, "/cubicmap.png\0"));
     textures["CubicMapTexture"] = LoadTextureFromImage(imMap);
     Mesh mesh = GenMeshCubicmap(imMap, (Vector3){ 1.0f, 1.0f, 1.0f });
     models["MapModel"] = LoadModelFromMesh(mesh);
 
-    textures["MapTexture"] = LoadTexture("../assets/cubicmap_atlas.png");
+    textures["MapTexture"] = LoadTexture(strcat(ASSETS_DIR, "/cubicmap_atlas.png\0"));
     models["MapModel"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["MapTexture"];
 
     imageColors["MapPixels"] = LoadImageColors(imMap);
     UnloadImage(imMap);
 
-    sounds["Hit"] = LoadSound("../assets/hit.wav");
+    sounds["Hit"] = LoadSound(strcat(ASSETS_DIR, "/hit.wav\0"));
 }
 
 AssetManager::~AssetManager() {
