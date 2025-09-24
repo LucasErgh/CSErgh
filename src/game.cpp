@@ -6,6 +6,7 @@
 #include "assetManager.hpp"
 #include "raylib.h"
 #include "raymath.h"
+#include <random>
 
 Game::Game(){
     camera.position = (Vector3){ 5.0f, 0.5f, 5.0f };
@@ -13,6 +14,8 @@ Game::Game(){
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
+
+    std::srand(0);
 }
 
 /*
@@ -27,6 +30,10 @@ void Game::render() {
 
             DrawModel(AssetManager::getInstance()->GetModel("MapModel"), mapPosition, 1.0f, WHITE);
             drawHitBoxAroundCamera();
+
+            for(const auto& cur : enemies){
+                DrawSphere(cur.position, cur.size, DARKGREEN);
+            }
         EndMode3D();
 
         renderHUD();
@@ -37,7 +44,12 @@ void Game::render() {
     Handles events in the main menu
 */
 ScreenCommand Game::update(){
-    checkCubicMapCollision();
+    UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+    //checkCubicMapCollision();
+
+    while (enemies.size() <= 5) {
+        spawnEnemy();
+    }
 
     if (IsKeyPressed(KEY_ESCAPE)){
         EnableCursor();
@@ -95,9 +107,14 @@ void Game::checkCollision() {
     collision.hit = false;
     Color cursorColor = WHITE;
 
-    collision = GetRayCollisionSphere(ray, testSpherePos, testSphereRadius);
-    if (collision.hit && collision.distance > 0) hit = true;
-    else hit = false;
+    RayCollision curCollision;
+
+    for (auto& enemy : enemies) {
+        collision = GetRayCollisionSphere(ray, testSpherePos, testSphereRadius);
+        if (collision.hit && collision.distance > 0) hit = true;
+        else hit = false;
+    }
+    
 }
 
 void Game::drawHitBoxAroundCamera(){
@@ -140,6 +157,23 @@ void Game::checkCubicMapCollision() {
                 // Collision detected, reset camera position
                 camera.position = oldCamPos;
             }
+        }
+    }
+}
+
+void Game::spawnEnemy() {
+    Texture2D& cubicmap = AssetManager::getInstance()->GetTexture("CubicMapTexture");
+    Color* mapPixels = AssetManager::getInstance()->GetImageColors("MapPixels");   
+
+    while (true) {
+        int xPos = std::rand() % cubicmap.width;
+        int zPos = std::rand() % cubicmap.height;
+
+        if (mapPixels[zPos*cubicmap.width + xPos].r != 255) {
+            Enemy badGuy;
+            badGuy.position = {(float)xPos, 0.5f, (float)zPos};
+            enemies.push_back(badGuy);
+            return;
         }
     }
 }

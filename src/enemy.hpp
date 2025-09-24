@@ -7,9 +7,10 @@
 
 #include "raylib.h"
 
-struct enemy{
+struct Enemy{
     Vector3 position;
-    int health;
+    int health = 100;
+    static float size;
 };
 
 #endif
