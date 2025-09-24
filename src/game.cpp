@@ -27,7 +27,6 @@ void Game::render() {
 
             DrawModel(AssetManager::getInstance()->GetModel("MapModel"), mapPosition, 1.0f, WHITE);
             drawHitBoxAroundCamera();
-
         EndMode3D();
 
         renderHUD();
@@ -74,7 +73,7 @@ void Game::renderHUD(){
     Texture2D& texture = AssetManager::getInstance()->GetTexture("Gun");
 
     Vector2 position = {
-        (screenWidth * 2.0f / 3.0f) - (texture.width * scale / 2.0f),
+        (screenWidth * 3.0f / 4.0f) - (texture.width * scale / 2.0f),
         screenHeight - (texture.height * scale)
     };
     DrawTextureEx(texture, position, 0.0f, scale, WHITE);
@@ -109,38 +108,38 @@ void Game::drawHitBoxAroundCamera(){
 }
 
 void Game::checkCubicMapCollision() {
-        Vector3 oldCamPos = camera.position;
-        UpdateCamera(&camera, CAMERA_FIRST_PERSON);
+    Vector3 oldCamPos = camera.position;
+    UpdateCamera(&camera, CAMERA_FIRST_PERSON);
 
-        Vector2 playerPos = { camera.position.x, camera.position.z };
-        float playerRadius = 0.1f;  // Collision radius (player is modelled as a cilinder for collision)
+    Vector2 playerPos = { camera.position.x, camera.position.z };
+    float playerRadius = 0.1f;  // Collision radius (player is modelled as a cilinder for collision)
 
-        int playerCellX = (int)(playerPos.x - mapPosition.x + 0.5f);
-        int playerCellY = (int)(playerPos.y - mapPosition.z + 0.5f);
+    int playerCellX = (int)(playerPos.x - mapPosition.x + 0.5f);
+    int playerCellY = (int)(playerPos.y - mapPosition.z + 0.5f);
 
-        Texture2D& cubicmap = AssetManager::getInstance()->GetTexture("CubicMapTexture");
-        Color* mapPixels = AssetManager::getInstance()->GetImageColors("MapPixels");
+    Texture2D& cubicmap = AssetManager::getInstance()->GetTexture("CubicMapTexture");
+    Color* mapPixels = AssetManager::getInstance()->GetImageColors("MapPixels");
 
-        // Out-of-limits security check
-        if (playerCellX < 0) playerCellX = 0;
-        else if (playerCellX >= cubicmap.width) playerCellX = cubicmap.width - 1;
+    // Out-of-limits security check
+    if (playerCellX < 0) playerCellX = 0;
+    else if (playerCellX >= cubicmap.width) playerCellX = cubicmap.width - 1;
 
-        if (playerCellY < 0) playerCellY = 0;
-        else if (playerCellY >= cubicmap.height) playerCellY = cubicmap.height - 1;
+    if (playerCellY < 0) playerCellY = 0;
+    else if (playerCellY >= cubicmap.height) playerCellY = cubicmap.height - 1;
 
-        // Check map collisions using image data and player position
-        // TODO: Improvement: Just check player surrounding cells for collision
-        for (int y = 0; y < cubicmap.height; y++)
+    // Check map collisions using image data and player position
+    // TODO: Improvement: Just check player surrounding cells for collision
+    for (int y = 0; y < cubicmap.height; y++)
+    {
+        for (int x = 0; x < cubicmap.width; x++)
         {
-            for (int x = 0; x < cubicmap.width; x++)
+            if ((mapPixels[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
+                (CheckCollisionCircleRec(playerPos, playerRadius,
+                (Rectangle){ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
             {
-                if ((mapPixels[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
-                    (CheckCollisionCircleRec(playerPos, playerRadius,
-                    (Rectangle){ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
-                {
-                    // Collision detected, reset camera position
-                    camera.position = oldCamPos;
-                }
+                // Collision detected, reset camera position
+                camera.position = oldCamPos;
             }
         }
+    }
 }
