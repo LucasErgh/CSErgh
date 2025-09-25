@@ -3,6 +3,7 @@
 */
 
 #include "assetManager.hpp"
+#include <string>
 #include <cstring>
 
 AssetManager* AssetManager::instance = nullptr;
@@ -15,24 +16,32 @@ AssetManager* AssetManager::getInstance() {
 }
 
 AssetManager::AssetManager() {
-    sounds["Pew1"] = LoadSound(strcat(ASSETS_DIR, "/Pew1.wav\0"));
+    // Helper lambda to build full asset paths
+    auto assetPath = [](const std::string& filename) {
+        return std::string(ASSETS_DIR) + "/" + filename;
+    };
 
-    Image GunImage = LoadImage(strcat(ASSETS_DIR, "/Gun.png\0"));
-    textures["Gun"] = LoadTextureFromImage(GunImage);
-    UnloadImage(GunImage);
+    // Load sounds
+    sounds["Pew1"] = LoadSound(assetPath("Pew1.wav").c_str());
+    sounds["Hit"]  = LoadSound(assetPath("hit.wav").c_str());
 
-    Image imMap = LoadImage(strcat(ASSETS_DIR, "/cubicmap.png\0"));
+    // Load gun texture
+    Image gunImage = LoadImage(assetPath("Gun.png").c_str());
+    textures["Gun"] = LoadTextureFromImage(gunImage);
+    UnloadImage(gunImage);
+
+    // Load map textures and model
+    Image imMap = LoadImage(assetPath("cubicmap.png").c_str());
     textures["CubicMapTexture"] = LoadTextureFromImage(imMap);
+
     Mesh mesh = GenMeshCubicmap(imMap, (Vector3){ 1.0f, 1.0f, 1.0f });
     models["MapModel"] = LoadModelFromMesh(mesh);
 
-    textures["MapTexture"] = LoadTexture(strcat(ASSETS_DIR, "/cubicmap_atlas.png\0"));
+    textures["MapTexture"] = LoadTexture(assetPath("cubicmap_atlas.png").c_str());
     models["MapModel"].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textures["MapTexture"];
 
     imageColors["MapPixels"] = LoadImageColors(imMap);
     UnloadImage(imMap);
-
-    sounds["Hit"] = LoadSound(strcat(ASSETS_DIR, "/hit.wav\0"));
 }
 
 AssetManager::~AssetManager() {

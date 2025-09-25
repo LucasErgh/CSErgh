@@ -7,7 +7,7 @@
 
 TitleScreen::TitleScreen(){
     ui.addText(1, 0.5f, 0.4f, 0.4f, 0.3f, "CS Ergh");
-    ui.addText(1, 0.5f, 0.6f, 0.4f, 0.3f, "Press space to continue");
+    ui.addText(1, 0.5f, 0.6f, 0.4f, 0.3f, ASSETS_DIR/*"Press space to continue"*/);
 }
 
 void TitleScreen::render(){

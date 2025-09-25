@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.30.0 FATAL_ERROR)
 
-set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
-
 FetchContent_Declare(
     raylib
     GIT_REPOSITORY "https://github.com/raysan5/raylib.git"
@@ -9,7 +7,8 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(raylib)
-add_compile_definitions(ASSETS_DIR="${ASSETS_DIR}")
+
+add_compile_definitions(ASSETS_DIR=\"${CMAKE_SOURCE_DIR}/assets\")
 
 add_executable(Client "./src/main.cpp")
 
